@@ -122,6 +122,39 @@ Model performance is evaluated using:
 
 ---
 
+## Project Visualizations
+
+### Confusion Matrix
+
+![Confusion Matrix](images/confusion_matrix.png)
+
+The confusion matrix summarizes classification performance by comparing predicted and actual borrower credit outcomes.
+
+---
+
+### Posterior Default Probability Distribution
+
+![Posterior Distribution](images/posterior_distribution.png)
+
+The posterior distribution illustrates the uncertainty-aware probability estimates generated through Bayesian inference.
+
+---
+
+### Risk Category Segmentation
+
+![Risk Category Boxplot](images/risk_category_boxplot.png)
+
+Borrowers are segmented into risk categories using posterior default probabilities, supporting interpretable lending decisions.
+
+---
+
+### ROC Curve
+
+![ROC Curve](images/roc_curve.png)
+
+The ROC curve evaluates the model’s ability to distinguish between high-risk and low-risk borrowers across classification thresholds.
+
+
 # Technologies Used
 
 - Python
