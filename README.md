@@ -150,7 +150,7 @@ Borrowers are segmented into risk categories using posterior default probabiliti
 
 ### ROC Curve
 
-![ROC Curve](images/roc_curve.png)
+
 
 The ROC curve evaluates the model’s ability to distinguish between high-risk and low-risk borrowers across classification thresholds.
 
