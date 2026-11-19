@@ -2,247 +2,216 @@
 
 <img width="613" height="470" alt="image" src="https://github.com/user-attachments/assets/a7879a2d-8cbb-4876-942e-a80f909906fb" />
 
-## Overview
+## Project Overview
 
-The Bayesian Credit Risk Simulator is a probabilistic financial analytics project that applies Bayesian Logistic Regression to estimate borrower default risk while explicitly quantifying predictive uncertainty.
+This project develops a Bayesian credit risk modeling framework using the German Credit Dataset from the UCI Machine Learning Repository. It applies Bayesian Logistic Regression to estimate borrower default probabilities and explores how posterior probability estimates can support borrower risk classification.
 
-Traditional credit scoring models often provide deterministic predictions that fail to communicate uncertainty in borrower risk estimates. This project addresses this limitation by leveraging Bayesian inference and Markov Chain Monte Carlo (MCMC) sampling to generate posterior default probabilities and uncertainty-aware borrower risk profiles.
+Credit risk assessment is an important component of lending decisions. Financial institutions need methods for evaluating borrower characteristics, estimating the likelihood of default, and identifying applicants who may present higher repayment risks. This project explores a probabilistic modeling approach that combines borrower-level financial and demographic information with Bayesian inference.
 
-The framework demonstrates how Bayesian statistics can support more transparent, interpretable, and risk-sensitive decision-making in credit risk management.
+Using Python, PyMC, and ArviZ, the project implements a Bayesian Logistic Regression model, estimates posterior borrower default probabilities, groups borrowers into risk categories, and evaluates classification performance using standard metrics.
 
----
+Unlike an approach that reports only point estimates of model parameters, Bayesian inference produces posterior distributions that represent uncertainty about model parameters. The project introduces this perspective to credit risk analysis and demonstrates how posterior-based probability estimates can be used for risk assessment.
 
 ## Research Question
 
-**Can Bayesian inference improve credit risk assessment by providing uncertainty-aware estimates of borrower default probabilities and interpretable risk segmentation?**
-
----
+**How can Bayesian Logistic Regression be used to estimate borrower default probabilities and support uncertainty-aware credit risk assessment?**
 
 ## Project Objectives
 
-* Analyze borrower credit risk characteristics
-* Build a Bayesian Logistic Regression model
-* Estimate posterior default probabilities
-* Quantify uncertainty in borrower risk predictions
-* Develop borrower risk categories
-* Evaluate predictive performance using classification metrics
-* Demonstrate practical applications of Bayesian statistics in finance
+The main objectives are to:
 
----
+- Explore the distribution and characteristics of borrower information in the German Credit Dataset.
+- Prepare categorical and numerical variables for Bayesian modeling.
+- Develop a Bayesian Logistic Regression model using PyMC.
+- Estimate posterior default probabilities for individual borrowers.
+- Classify borrowers into low-, medium-, and high-risk categories using probability thresholds.
+- Evaluate model classification performance using accuracy, precision, recall, F1-score, confusion matrix, and ROC-AUC.
+- Explore the application of Bayesian inference to probabilistic credit risk assessment.
 
-## Dataset
+## Dataset Description
 
-This project uses the German Credit Dataset from the UCI Machine Learning Repository.
+The analysis uses the **German Credit Dataset**, obtained from the UCI Machine Learning Repository.
 
-### Dataset Characteristics
+The dataset contains 1,000 borrower records and 20 explanatory variables describing financial history, credit characteristics, loan information, and demographic attributes.
 
-| Feature | Value |
-| ------------------- | --------------------: |
-| Observations | 1,000 |
-| Predictor Variables | 20 |
-| Target Variable | Credit Risk |
-| Problem Type | Binary Classification |
+| Dataset characteristic | Description |
+|---|---|
+| Dataset | German Credit Dataset |
+| Source | UCI Machine Learning Repository |
+| Observations | 1,000 borrowers |
+| Predictors | 20 variables |
+| Target variable | Credit risk classification |
+| Original target coding | 1 = Good Credit; 2 = Bad Credit |
+| Modeling target coding | 0 = Good Credit; 1 = Bad Credit |
 
-### Target Variable
+The target variable was recoded to represent bad credit as the positive class. The dataset contains 700 good-credit observations and 300 bad-credit observations, indicating an imbalance between the two classes.
 
-| Value | Interpretation |
-| ----- | -------------- |
-| 0 | Good Credit |
-| 1 | Bad Credit |
-
-### Dataset Source
-
-https://archive.ics.uci.edu/ml/datasets/statlog+%28german+credit+data%29
-
----
+The exploratory analysis also examines borrower age, credit amount, loan characteristics, and the distribution of credit risk categories. The credit amount variable exhibits a right-skewed distribution.
 
 ## Methodology
 
-### Notebook 01: Exploratory Data Analysis
+The project follows a five-notebook workflow, progressing from exploratory data analysis and preprocessing to Bayesian modeling, risk analysis, and model evaluation.
 
-- Class distribution analysis  
-- Variable exploration  
-- Descriptive statistics  
-- Risk profile assessment  
+### 1. Exploratory Data Analysis
 
----
+The first notebook examines the structure and characteristics of the German Credit Dataset.
 
-### Credit Risk Distribution
+Key activities include:
+
+- Loading and inspecting the dataset.
+- Examining variable types and dataset dimensions.
+- Reviewing the distribution of good- and bad-credit borrowers.
+- Summarizing numerical variables using descriptive statistics.
+- Visualizing credit amount and borrower age distributions.
+- Comparing credit amount distributions across credit risk categories.
+- Checking for missing values.
+
+The dataset contains 1,000 observations and 21 columns, including 20 predictors and the original target variable. No missing values were identified in the inspected dataset.
+
+**Credit Risk Distribution**
 
 <img width="513" height="470" alt="image" src="https://github.com/user-attachments/assets/e7d9a4a2-6d99-4fb8-b732-8a0026697537" />
 
----
+### 2. Data Preprocessing
 
-### Notebook 02: Data Preprocessing
+The second notebook prepares the dataset for Bayesian Logistic Regression.
 
-- Label encoding of categorical variables  
-- Feature scaling using StandardScaler  
-- Construction of modeling dataset  
+The preprocessing workflow includes:
 
----
+- Separating predictor variables from the target variable.
+- Recoding the target variable so that good credit is represented by 0 and bad credit by 1.
+- Identifying categorical predictor variables.
+- Applying Label Encoding to categorical variables.
+- Standardizing the predictor matrix using StandardScaler.
+- Preparing the feature matrix and target vector for model estimation.
 
-### Notebook 03: Bayesian Logistic Regression
+The resulting feature matrix contains 1,000 observations and 20 predictors, while the target vector contains 1,000 binary observations.
 
-- PyMC probabilistic modeling  
-- MCMC sampling (NUTS)  
-- Posterior estimation of borrower risk  
+### 3. Bayesian Logistic Regression
 
----
+The third notebook develops the Bayesian Logistic Regression model using PyMC.
 
-### Posterior Probability Distribution
+The model specifies prior distributions for the regression coefficients and intercept:
+
+- Regression coefficients are assigned Normal prior distributions with a mean of 0 and standard deviation of 1.
+- The intercept is assigned a Normal prior distribution with a mean of 0 and standard deviation of 1.
+- The linear predictor is transformed using the logistic sigmoid function to obtain borrower-level default probabilities.
+- The observed binary credit outcomes are modeled using a Bernoulli likelihood.
+
+Posterior sampling is performed using Markov Chain Monte Carlo (MCMC), with the following sampling configuration:
+
+| Sampling parameter | Setting |
+|---|---:|
+| Posterior draws | 1,000 |
+| Tuning iterations | 1,000 |
+| Target acceptance rate | 0.90 |
+| Random seed | 42 |
+
+ArviZ is used to summarize and visualize the posterior sampling results, including posterior summaries and trace plots.
+
+The notebook provides the foundation for estimating borrower default probabilities through a Bayesian modeling framework.
+
+[![Open In Colab](https://camo.githubusercontent.com/bc9ece8f645afd1edbf69b3006353a59d93a267f24f566f7acf1460df39061bb/68747470733a2f2f636f6c61622e72657365617263682e676f6f676c652e636f6d2f6173736574732f636f6c61622d62616467652e737667)](https://colab.research.google.com/github/OkyereBiew/bayesian-credit-risk-simulator/blob/main/notebooks/03_bayesian_modeling.ipynb)
+
+### 4. Probabilistic Credit Risk Analysis
+
+The fourth notebook uses posterior model estimates to derive borrower-level default probabilities.
+
+For each borrower, the posterior mean probability is calculated by averaging the sampled values of the model's probability parameter across chains and posterior draws.
+
+These estimated probabilities are then used to assign borrowers to three risk categories:
+
+| Estimated default probability | Risk category |
+|---|---|
+| Below 0.30 | Low Risk |
+| 0.30 to below 0.60 | Medium Risk |
+| 0.60 and above | High Risk |
+
+The notebook explores the resulting risk classifications through:
+
+- Borrower counts across risk categories.
+- The distribution of estimated posterior mean default probabilities.
+- Comparisons of estimated probabilities across risk categories.
+
+This stage demonstrates how Bayesian model estimates can be translated into probability-based borrower risk groups.
+
+**Posterior Probability Distribution**
 
 <img width="686" height="470" alt="image" src="https://github.com/user-attachments/assets/dc0743f6-4f09-41e3-8a42-6ae3114a428b" />
 
-This plot shows the distribution of predicted default probabilities, capturing uncertainty across all borrowers.
-
----
-
-## Notebook 04: Probabilistic Risk Analysis
-
-- Posterior default probability estimation  
-- Borrower risk segmentation  
-- Risk category assignment  
-
----
-
-### Borrower Risk Segmentation
+**Borrower Risk Segmentation**
 
 <img width="691" height="470" alt="image" src="https://github.com/user-attachments/assets/dc62a42f-126c-4155-a8a2-95a12939cf88" />
 
-Borrowers are grouped into low, medium, and high-risk categories based on posterior default probabilities.
+### 5. Model Evaluation
 
----
+The fifth notebook evaluates the classification performance of the Bayesian Logistic Regression model.
 
-## Notebook 05: Model Evaluation
+Using a probability threshold of 0.50, estimated borrower default probabilities are converted into binary predictions.
 
-- Accuracy evaluation  
-- Confusion matrix  
-- Classification report  
-- ROC curve analysis  
+The evaluation includes:
 
----
+- Accuracy.
+- Precision.
+- Recall.
+- F1-score.
+- Confusion matrix.
+- Receiver Operating Characteristic (ROC) curve.
+- Area Under the ROC Curve (ROC-AUC).
 
-### Confusion Matrix (Model Performance)
+The notebook also visualizes predicted probability distributions to examine how estimated probabilities relate to the two observed credit classes.
+
+**Confusion Matrix**
 
 <img width="513" height="470" alt="image" src="https://github.com/user-attachments/assets/e7d9a4a2-6d99-4fb8-b732-8a0026697537" />
 
-This confusion matrix shows how well the model distinguishes between good and bad credit borrowers, highlighting correct and incorrect classifications.
-
----
-
-###  ROC Curve
+**ROC Curve**
 
 <img width="613" height="470" alt="image" src="https://github.com/user-attachments/assets/8d2c9ee2-f6b0-4ab1-bf08-b1746b1e6450" />
 
-This ROC curve evaluates the model’s ability to distinguish between high-risk and low-risk borrowers across different thresholds.
+**Evaluation Note:** The supplied evaluation workflow estimates and evaluates the model using the same 1,000 observations. Consequently, the reported classification metrics represent in-sample performance and should not be interpreted as evidence of predictive performance on previously unseen borrowers.
 
----
+## Key Analytical Components
 
-## Key Findings
+The project brings together several statistical and computational techniques:
 
-- The model effectively separates good and bad credit borrowers  
-- Bayesian inference provides uncertainty-aware predictions  
-- Posterior distributions improve interpretability  
-- Risk segmentation supports financial decision-making  
+- **Exploratory Data Analysis:** Descriptive statistics and visual analysis of borrower characteristics.
+- **Data Preprocessing:** Categorical encoding and feature standardization.
+- **Bayesian Logistic Regression:** Probabilistic binary classification using prior distributions and a Bernoulli likelihood.
+- **MCMC Sampling:** Posterior estimation using PyMC.
+- **Posterior Analysis:** Examination of posterior summaries and sampling visualizations using ArviZ.
+- **Probability-Based Risk Segmentation:** Classification of borrowers using estimated default probabilities.
+- **Classification Evaluation:** Assessment using confusion matrix, accuracy, precision, recall, F1-score, and ROC-AUC.
 
----
+## Limitations and Future Improvements
 
-## Financial Interpretation
+The current implementation provides a foundation for Bayesian credit risk modeling, but several improvements would strengthen its predictive and analytical reliability.
 
-This Bayesian model improves credit risk assessment by:
+Potential extensions include:
 
-- Producing probability distributions instead of fixed outputs  
-- Capturing uncertainty in predictions  
-- Supporting risk-based lending decisions  
-- Improving interpretability for financial institutions  
+1. **Out-of-Sample Validation:** Introduce training and testing datasets or cross-validation to evaluate performance on unseen borrowers.
+2. **Improved Categorical Encoding:** Explore one-hot encoding or alternative representations for nominal categorical variables to avoid imposing artificial numerical ordering.
+3. **Posterior Predictive Uncertainty:** Extend the analysis to report borrower-specific posterior intervals and more fully examine uncertainty in individual default probability estimates.
+4. **Model Comparison:** Compare Bayesian Logistic Regression with conventional Logistic Regression and other classification approaches using consistent validation procedures.
+5. **Hierarchical Bayesian Modeling:** Investigate hierarchical structures that can represent variation across borrower groups or credit segments.
+6. **Additional Predictors:** Incorporate relevant macroeconomic and financial indicators to examine how broader economic conditions influence credit risk.
+7. **Decision-Oriented Risk Analysis:** Explore how probability thresholds can be selected in relation to lending policies, default costs, and risk tolerance.
 
----
+## Technologies and Tools
 
-## Technologies Used
+| Category | Tools |
+|---|---|
+| Programming Language | Python |
+| Bayesian Modeling | PyMC |
+| Bayesian Analysis | ArviZ |
+| Data Manipulation | Pandas, NumPy |
+| Machine Learning and Preprocessing | Scikit-learn |
+| Data Visualization | Matplotlib, Seaborn |
+| Development Environment | Google Colab |
 
-* Python
-* PyMC
-* ArviZ
-* NumPy
-* Pandas
-* Scikit-Learn
-* Matplotlib
-* Seaborn
-* Google Colab
 
----
+## Conclusion
 
-## Repository Structure
+This project demonstrates the application of Bayesian Logistic Regression to credit risk assessment using borrower-level financial and demographic information. By combining Bayesian inference, MCMC-based posterior estimation, probability-based risk segmentation, and classification evaluation, it provides a practical framework for exploring probabilistic approaches to borrower default assessment.
 
-```text
-bayesian-credit-risk-simulator/
-│
-├── data/
-│
-├── images/
-│   ├── confusion_matrix.png
-│   ├── posterior_distribution.png
-│   ├── risk_category_boxplot.png
-│   └── roc_curve.png
-│
-├── notebooks/
-│   ├── 01_data_exploration.ipynb
-│   ├── 02_data_preprocessing.ipynb
-│   ├── 03_bayesian_modeling.ipynb
-│   ├── 04_risk_analysis.ipynb
-│   └── 05_model_evaluation.ipynb
-│
-├── README.md
-└── requirements.txt
-````
-
----
-
-## Statistical Techniques
-
-* Bayesian Inference
-* Logistic Regression
-* MCMC Sampling (NUTS)
-* Posterior Estimation
-* Probabilistic Classification
-* Uncertainty Quantification
-* Financial Risk Modeling
-
----
-
-## Portfolio Relevance
-
-This project demonstrates:
-
-* Bayesian statistical modeling
-* Financial risk analytics
-* Machine learning classification
-* Probabilistic decision systems
-* End-to-end data science workflow
-
----
-
-## Future Enhancements
-
-* Hierarchical Bayesian modeling
-* Real-time credit scoring system
-* Macroeconomic feature integration
-* Explainable AI for lending decisions
-
----
-
-## References
-
-1. Bayesian Data Analysis
-2. The Elements of Statistical Learning
-3. PyMC Documentation: [https://www.pymc.io](https://www.pymc.io)
-4. UCI German Credit Dataset: [https://archive.ics.uci.edu/ml/datasets/statlog+%28german+credit+data%29](https://archive.ics.uci.edu/ml/datasets/statlog+%28german+credit+data%29)
-
----
-
-## Author
-
-**Clement Kofi Okyere Biew**
-
-Statistics | Data Science | Bayesian Statistics | Computational Statistics | Financial Risk Analytics | Quantitative Research
-
+The project also highlights the importance of distinguishing estimated default probabilities from the uncertainty associated with those estimates, as well as the need for appropriate validation before applying predictive models to real-world lending decisions.
